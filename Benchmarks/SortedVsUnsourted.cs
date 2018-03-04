@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Validators;
 
 namespace Benchmarks
 {

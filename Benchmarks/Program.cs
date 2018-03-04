@@ -15,6 +15,7 @@ namespace Benchmarks
             BenchmarkRunner.Run<ByteArrayEqualityBenchmark>();
             // BenchmarkRunner.Run<SortedVsUnsourted>();
             // BenchmarkRunner.Run<NewConstraintBenchmark>();
+            // BenchmarkRunner.Run<MaxBenchmark>();
         }
     }
 }

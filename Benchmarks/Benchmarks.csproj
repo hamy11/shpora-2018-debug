@@ -141,6 +141,7 @@
   <ItemGroup>
     <Compile Include="BitCountBenchmark.cs" />
     <Compile Include="ByteArrayEqualityBenchmark.cs" />
+    <Compile Include="MaxBenchmark.cs" />
     <Compile Include="MemoryTraffic.cs" />
     <Compile Include="NewConstraintBenchmark.cs" />
     <Compile Include="Program.cs" />
