@@ -48,7 +48,10 @@ namespace Benchmarks
             var res = new int[Vector<int>.Count];
             mx.CopyTo(res);
 
-            return Max(res);
+            var max = Max(res);
+            for (var i = len; i < numbers.Length; ++i)
+                max = Math.Max(max, numbers[i]);
+            return max;
         }
 
         private static int Max(int[] arr)
