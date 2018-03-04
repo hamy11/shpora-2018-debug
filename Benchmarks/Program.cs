@@ -13,6 +13,7 @@ namespace Benchmarks
             // BenchmarkRunner.Run<StructVsClassBenchmark>();
             // BenchmarkRunner.Run<BitCountBenchmark>();
             BenchmarkRunner.Run<ByteArrayEqualityBenchmark>();
+            // BenchmarkRunner.Run<SortedVsUnsourted>();
             // BenchmarkRunner.Run<NewConstraintBenchmark>();
         }
     }
