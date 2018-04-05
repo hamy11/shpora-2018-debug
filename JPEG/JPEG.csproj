@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JPEG</RootNamespace>
     <AssemblyName>JPEG</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,16 +57,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HuffmanEncoding\BitsBuffer.cs" />
+    <Compile Include="HuffmanEncoding\BitsWithLength.cs" />
     <Compile Include="CompressedImage.cs" />
     <Compile Include="DCT.cs" />
-    <Compile Include="HuffmanCodec.cs" />
+    <Compile Include="HuffmanEncoding\HuffmanCodec.cs" />
+    <Compile Include="HuffmanEncoding\HuffmanNode.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
+    <Compile Include="JpegCompressor.cs" />
     <Compile Include="Images\Matrix.cs" />
     <Compile Include="Images\Pixel.cs" />
     <Compile Include="Images\PixelFormat.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\IEnumerableExtensions.cs" />
-    <Compile Include="Utilities\MathEx.cs" />
+    <Compile Include="SortedMultiSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

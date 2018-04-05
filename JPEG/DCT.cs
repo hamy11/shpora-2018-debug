@@ -1,64 +1,89 @@
 ﻿using System;
-using JPEG.Utilities;
 
 namespace JPEG
 {
-	public class DCT
-	{
-		public static double[,] DCT2D(double[,] input)
-		{
-			var height = input.GetLength(0);
-			var width = input.GetLength(1);
-			var coeffs = new double[width, height];
-			for(var u = 0; u < width; u++)
-				for(var v = 0; v < height; v++)
-				{
-					var sum = MathEx
-						.SumByTwoVariables(
-							0, width,
-							0, height,
-							(x, y) => BasisFunction(input[x, y], u, v, x, y, height, width));
-					
-					coeffs[u, v] = sum * Beta(height, width) * Alpha(u) * Alpha(v);
-				}
-			return coeffs;
-		}
+    public class DCT
+    {
+        private readonly double[] basisFuncCache;
+        private readonly double[] alphaValuesCache;
+        private readonly double beta;
+        private const byte NumberBitsCount = 3;
+        private const int TwicePowered = NumberBitsCount * 2;
+        private const int ThricePowered = NumberBitsCount * 3;
+        private static double Alpha(int u) => u == 0 ? 1 / Math.Sqrt(2) : 1;
 
-		public static void IDCT2D(double[,] coeffs, double[,] output)
-		{
-			for(var x = 0; x < coeffs.GetLength(1); x++)
-			{
-				for(var y = 0; y < coeffs.GetLength(0); y++)
-				{
-					var sum = MathEx
-						.SumByTwoVariables(
-							0, coeffs.GetLength(1),
-							0, coeffs.GetLength(0),
-							(u, v) => BasisFunction(coeffs[u, v], u, v, x, y, coeffs.GetLength(0), coeffs.GetLength(1)) * Alpha(u) * Alpha(v));
+        public DCT(int size)
+        {
+            alphaValuesCache = new double[size * size];
+            beta = 1d / size + 1d / size;
+            basisFuncCache = new double[size * size * size * size];
+            FillBasisFunctionCache(size);
+            FillAlphaValuesCache(size);
+         }
 
-					output[x, y] = sum * Beta(coeffs.GetLength(0), coeffs.GetLength(1));
-				}
-			}
-		}
+        private void FillAlphaValuesCache(int size)
+        {
+            for (byte i = 0; i < size; i++)
+            {
+                for (byte j = 0; j < size; j++)
+                {
+                    alphaValuesCache[i << NumberBitsCount | j] = Alpha(i) * Alpha(j);
+                }
+            }
+        }
 
-		public static double BasisFunction(double a, double u, double v, double x, double y, int height, int width)
-		{
-			var b = Math.Cos(((2d * x + 1d) * u * Math.PI) / (2 * width));
-			var c = Math.Cos(((2d * y + 1d) * v * Math.PI) / (2 * height));
+        private void FillBasisFunctionCache(int size)
+        {
+            for (byte u = 0; u < size; u++)
+            for (byte v = 0; v < size; v++)
+            {
+                for (byte x = 0; x < size; x++)
+                for (byte y = 0; y < size; y++)
+                {
+                    basisFuncCache[u << ThricePowered | v << TwicePowered | x << NumberBitsCount | y] =
+                        Math.Cos((2d * x + 1d) * u * Math.PI / (2 * size)) *
+                        Math.Cos((2d * y + 1d) * v * Math.PI / (2 * size));
+                }
+            }
+        }
 
-			return a * b * c;
-		}
+        private double BasisFunction(double a, byte u, byte v, byte x, byte y)
+        {
+            return a * basisFuncCache[u << ThricePowered | v << TwicePowered | x << NumberBitsCount | y];
+        }
 
-		private static double Alpha(int u)
-		{
-			if(u == 0)
-				return 1 / Math.Sqrt(2);
-			return 1;
-		}
+        public double[,] DCT2D(double[,] input)
+        {
+            var length = input.GetLength(0);
+            var coeffs = new double[length, length];
+            for (byte u = 0; u < length; u++)
+            for (byte v = 0; v < length; v++)
+            {
+                var sum = 0.0;
+                for (byte x = 0; x < length; x++)
+                for (byte y = 0; y < length; y++)
+                {
+                    sum += BasisFunction(input[x, y], u, v, x, y);
+                }
+                coeffs[u, v] = sum * beta * alphaValuesCache[u << NumberBitsCount | v];
+            }
+            return coeffs;
+        }
 
-		private static double Beta(int height, int width)
-		{
-			return 1d / width + 1d / height;
-		}
-	}
+        public void IDCT2D(double[,] coeffs, double[,] output)
+        {
+            var length = coeffs.GetLength(0);
+            for (byte x = 0; x < length; x++)
+            for (byte y = 0; y < length; y++)
+            {
+                var sum = 0.0;
+                for (byte u = 0; u < length; u++)
+                for (byte v = 0; v < length; v++)
+                {
+                    sum += BasisFunction(coeffs[u, v], u, v, x, y) * alphaValuesCache[u << NumberBitsCount | v];
+                }
+                output[x, y] = sum * beta;
+            }
+        }
+    }
 }
